@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Music</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!-- Chrome, Firefox OS and Opera -->
+    <meta name="theme-color" content="#512DA8">
+    <!-- Windows Phone -->
+    <meta name="msapplication-navbutton-color" content="#512DA8">
+    <!-- iOS Safari -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="#512DA8">
+    <style>
+      body {
+        height: 120vh;
+        margin: 0;
+        position: relative;
+      }
+      nav {
+        background-color: #673AB7;
+      }
+      .waves-effect.waves-yellow {
+        background-color: rgb(255, 193, 7, 0.65) !important;
+      }
+      
+      .list-title, .entry {
+        padding-left: 5px;
+      }
+      
+      #controls {
+        position: fixed;
+        bottom: 0px;
+        height: 56px;
+        background-color: white;
+        width: 100%;
+        box-shadow: 0 -2px 2px 0 rgba(0,0,0,0.14), 0 -1px 5px 0 rgba(0,0,0,0.12), 0 -3px 1px -2px rgba(0,0,0,0.2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+      }
+      .btn-floating.yellow {
+        background-color: rgb(255, 193, 7) !important;
+        transform: translateY(-50%);
+      }
+      #controls i {
+        font-size: 2.5em;
+      }
+      .title {
+        font-weight: bold;
+      }
+      .more p {
+        display: inline-block;
+      }
+      .more > :first-child {
+        font-weight: 500;
+      }
+      .collection .collection-item.avatar {
+        width: 100%;
+      }
+      .song.collection-item.avatar {
+        min-height: 0px;
+        padding-left: 20px;
+      }
+      .artist.collection-item.avatar {
+        min-height: 62px;
+      }
+      .artist .title {
+        transform: translateY(50%);
+      }
+      .artist .more {
+        display: none;
+      }
+      .album.collection-item.avatar {
+        min-height: 0px;
+      }
+      .album .circle {
+        border-radius: 0%;
+      }
+      .collection {
+        border: none;
+      }
+      .collection .collection-item {
+        border-bottom: 1px solid #bcbdbd;
+      }
+      .album .more > :first-child {
+        font-weight: 400;
+      }
+      .album .more > :last-child {
+        display: none;
+      }
+      i.material-icons:before, i.material-icons:after {
+        content: '\00a0';
+      }
+    </style>
+  </head>
+  <body>
+    
+    <nav>
+      <div class="nav-wrapper">
+        <form id="search-form">
+          <div class="input-field">
+            <input id="search" type="search" required>
+            <label for="search"><i class="material-icons">search</i></label>
+            <i class="material-icons close">close</i>
+          </div>
+        </form>
+      </div>
+    </nav>
+    
+    <div class="row">
+      <h5 class="list-title">Songs</h5>
+      <ul class="collection songs">
+      </ul>
+      <h5 class="list-title">Artists</h5>
+      <ul class="collection artists">
+      </ul>
+      <h5 class="list-title">Albums</h5>
+      <ul class="collection albums">
+      </ul>
+    </div>
+    
+    <div id="controls">
+      <i class="material-icons" onclick="conn.send('pr/')">skip_previous</i>
+      <a class="btn-floating btn-large waves-effect waves-light yellow" onclick="conn.send('pp/')"><i class="material-icons">play_arrow</i></a>
+      <i class="material-icons" onclick="conn.send('ne/')">skip_next</i>
+    </div>
+    
+    <script id="entry-template" type="text/x-handlebars-template">
+    <li class="{{type}} collection-item avatar waves-effect waves-yellow" {{#if mex}}onclick="conn.send('{{mex}}');"{{/if}}>
+      {{#if img}}<img src="{{img}}" alt="" class="circle">{{/if}}
+      <p class="title">{{first}}</p>
+      <div class="more">
+        <p>{{second}}</p>
+        <p>{{third}}</p>
+      </div>
+    </li>
+    </script>
+    
+    <script src="http://cdn.peerjs.com/0.3/peer.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.6/handlebars.min.js"></script>
+    <script>
+      var source   = $("#entry-template").html();
+      var template = Handlebars.compile(source);
+      var max_res  = 5;
+      
+      function search(query) {
+        var sanitize = query.split(' ').join('+');
+        var url = 'https://api.spotify.com/v1/search?q='
+        + sanitize + '&type=album,track,artist';
+        $.getJSON(url, function(data) {
+          $('.collection').empty(); // remove all the old results
+          display(data.tracks, 'song');
+          display(data.artists, 'artist');
+          display(data.albums, 'album');
+        });
+      }
+      
+      function display(list, type) {
+        for (var i = 0; i < list.items.length && i < max_res; i++) {
+          var item = list.items[i];
+          var context = {
+            type: type,
+            mex: command(type, item),
+            img: (type == 'song' ? false : item.images[1].url),
+            first: item.name,
+            second: (type == 'artist' ? false : item.artists[0].name),
+            third: (type != 'song' ? false : item.album.name)
+          };
+          var html = template(context);
+          $('.' + type + 's').append(html);
+        }
+      }
+      
+      function command(type, item) {
+        if (type == 'artist')
+          return false;
+        else {
+          var string = item.name + '+' + item.artists[0].name;
+          string = string.split(' ').join('+');
+          return type[0] + '/' + string;
+        }
+      }
+
+      // evento per la x (da sistemare ancora)
+      $('.close').off('click.card').on('click', function() {
+        $('#search').val('');
+        $('#search').focus();
+      });
+      
+      // evita che venga caricata una nuova pagina
+      $('#search-form').on('submit', function(e) {
+        e.preventDefault();
+        search($('#search').val());
+        $('#search').blur();
+      });
+      
+      var peer = new Peer({key: '8hw27u2km0z1if6r'});
+      var conn = peer.connect('2lahrd6crdl323xr');
+    </script>
+    
+  </body>
+</html>

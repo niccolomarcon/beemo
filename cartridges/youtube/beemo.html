@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style media="screen">
+      body {
+        height: 100vh;
+        margin: 0;
+        position: relative;
+        background-color: #e62117;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: none;
+      }
+      .fa-youtube-play {
+        color: white;
+        font-size: 30em;;
+      }
+      #player {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+
+    <i class="fa fa-youtube-play" aria-hidden="true"></i>
+
+    <div id="player"></div>
+
+    <script src="http://cdn.peerjs.com/0.3/peer.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script>
+    // This code loads the IFrame Player API code asynchronously.
+    var tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    var queue = []; // lista di video in coda
+
+    var player;
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+            height: '100%',
+            width: '100%',
+            autoplay: 1,
+            iv_load_policy: 3,
+            rel: 0,
+            showinfo: 0,
+            controls: 0,
+            events: {
+                'onStateChange': onPlayerStateChange
+            }
+        });
+    }
+
+    // finito il video fa partire quello dopo
+    function onPlayerStateChange(event) {
+        if (event.data == YT.PlayerState.ENDED)
+            nextVideo();
+    };
+
+    function playVideo(id) {
+        player.loadVideoById(id);
+        $('#player').css('display', 'block');
+        $('.fa-youtube-play').css('display', 'none');
+        player.playVideo();
+    }
+
+    // stop the video if is playing, resume it if is stopped
+    function toggleVideo() {
+        if (player.getPlayerState() == 1)
+            player.pauseVideo();
+        if (player.getPlayerState() == 2)
+            player.playVideo();
+    }
+
+    function nextVideo() {
+        if (queue.length > 0)
+            player.loadVideoById(queue.shift());
+    }
+
+    function addVideo(id) {
+        // se la coda è vuota e non ci sono video in riproduzione carica immediatamente il video
+        if (queue.length == 0 && player.getPlayerState() == YT.PlayerState.ENDED)
+            player.playVideo(id);
+        else
+            queue.push(id);
+    }
+
+    // api per la comunicazione p2p
+    var peer = new Peer('2lahrd6crdl323xr', {key: '8hw27u2km0z1if6r'});
+    peer.on('connection', function(conn) {
+        conn.on('data', function(data) {
+            console.log(data);
+            if (data[0] == '/') {
+                var args = data.substr(1).split(' ');
+                switch (args[0]) {
+                    case 'pp':
+                        toggleVideo();
+                        break;
+                    case 'next':
+                        nextVideo();
+                        break;
+                    case 'add':
+                        addVideo(args[1]);
+                        break;
+                }
+            } else {
+                playVideo(data);
+            }
+        });
+    });
+    </script>
+  </body>
+</html>

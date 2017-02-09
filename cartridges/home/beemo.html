@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,700" rel="stylesheet">
+    <style>
+      body {
+        cursor: none;
+        height: 100vh;
+        margin: 0;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      #clock {
+        font-family: 'Roboto', sans-serif;
+        font-weight: 100;
+        font-size: 5em;
+        color: white;
+      }
+      #ore {
+        font-weight: 700;
+      }
+      
+      /* SUNNY */
+      .sunny { 
+        animation: sunny 15s linear infinite;
+        background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%); 
+        height: 140px;
+        width: 20px;
+        margin-left: 70px;
+      }
+      .sunny::before {
+        background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%);
+        content: ''; 
+        height: 140px; 
+        width: 20px;
+        opacity: 1; 
+        position: absolute;
+        bottom: 0px;
+        left: 0px; 
+        transform: rotate(90deg);
+      }
+      .sunny::after {
+        background: #FFEE44; 
+        border-radius: 50%; 
+        box-shadow: rgba(255,255,0,0.2) 0 0 0 15px;
+        content: '';  
+        height: 80px;
+        width: 80px;  
+        position: absolute; 
+        left: -30px; 
+        top: 30px;
+      }
+      @keyframes sunny { 
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      /* CLOUDY */
+      .cloudy {
+        animation: cloudy 5s ease-in-out infinite;
+        background: #FFFFFF;
+        border-radius: 50%;
+        box-shadow: 
+          #FFFFFF 65px -15px 0 -5px, 
+          #FFFFFF 25px -25px, 
+          #FFFFFF 30px 10px, 
+          #FFFFFF 60px 15px 0 -10px, 
+          #FFFFFF 85px 5px 0 -5px;
+        height: 50px;
+        width: 50px; 
+        margin-left: 40px
+      }
+      .cloudy:after {
+        animation: cloudy_shadow 5s ease-in-out infinite;
+        background: #000000;
+        border-radius: 50%;
+        content: '';
+        height: 15px;
+        width: 120px;
+        opacity: 0.2;
+        position: absolute;
+        left: 5px; 
+        bottom: -60px;
+        transform: scale(.7);
+      }
+      @keyframes cloudy {
+        50% { transform: translateY(-20px); }
+      }
+      @keyframes cloudy_shadow {
+        50% { transform: translateY(20px) scale(1); opacity:.05; }
+      }
+
+      /* RAINY */
+      .rainy {
+        animation: rainy 5s ease-in-out infinite 1s;
+        background: #CCCCCC; 
+        border-radius: 50%;
+        box-shadow: 
+          #CCCCCC 65px -15px 0 -5px, 
+          #CCCCCC 25px -25px, 
+          #CCCCCC 30px 10px, 
+          #CCCCCC 60px 15px 0 -10px, 
+          #CCCCCC 85px 5px 0 -5px;
+        display: block;
+        height: 50px;
+        width: 50px;
+        margin-left: 40px;
+      }
+      .rainy:after {
+        animation: rainy_shadow 5s ease-in-out infinite 1s;
+        background: #000000;
+        border-radius: 50%;
+        content: '';
+        height: 15px;
+        width: 120px;
+        opacity: 0.2;
+        position: absolute;
+        left: 5px; 
+        bottom: -60px;
+        transform: scale(.7);
+      }
+      .rainy:before{
+        animation: rainy_rain .7s infinite linear;
+        content: '';
+        background: #CCCCCC;
+        border-radius: 50%;
+        display: block;
+        height: 6px;
+        width: 3px;
+        opacity: 0.3;
+        transform: scale(.9);
+      }
+      @keyframes rainy {
+        50% { transform: translateY(-20px); }
+      }
+      @keyframes rainy_shadow {
+        50% { transform: translateY(20px) scale(1); opacity: 0.05; }
+      }
+      @keyframes rainy_rain {
+        0% {  
+          box-shadow: 
+            rgba(0,0,0,0) 30px 30px, 
+            rgba(0,0,0,0) 40px 40px,  
+            #000 50px 75px, 
+            #000 55px 50px, 
+            #000 70px 100px, 
+            #000 80px 95px, 
+            #000 110px 45px, 
+            #000 90px 35px; 
+        }
+        25% {  
+          box-shadow: 
+            #000 30px 45px,
+            #000 40px 60px,
+            #000 50px 90px,
+            #000 55px 65px,
+            rgba(0,0,0,0) 70px 120px,
+            rgba(0,0,0,0) 80px 120px,
+            #000 110px 70px,
+            #000 90px 60px;
+        }
+        26% {  
+          box-shadow:
+            #000 30px 45px,
+            #000 40px 60px,
+            #000 50px 90px,
+            #000 55px 65px,
+            rgba(0,0,0,0) 70px 40px,
+            rgba(0,0,0,0) 80px 20px,
+            #000 110px 70px,
+            #000 90px 60px; 
+        }
+        50% { 
+          box-shadow:
+            #000 30px 70px,
+            #000 40px 80px,
+            rgba(0,0,0,0) 50px 100px,
+            #000 55px 80px,
+            #000 70px 60px,
+            #000 80px 45px,
+            #000 110px 95px,
+            #000 90px 85px;
+        }
+        51% {
+          box-shadow:
+            #000 30px 70px,
+            #000 40px 80px,
+            rgba(0,0,0,0) 50px 45px,
+            #000 55px 80px,
+            #000 70px 60px,
+            #000 80px 45px,
+            #000 110px 95px,
+            #000 90px 85px;
+        }
+        75% {
+          box-shadow:
+            #000 30px 95px,
+            #000 40px 100px,
+            #000 50px 60px,
+            rgba(0,0,0,0) 55px 95px,
+            #000 70px 80px,
+            #000 80px 70px,
+            rgba(0,0,0,0) 110px 120px,
+            rgba(0,0,0,0) 90px 110px;
+        }
+        76% {
+          box-shadow:
+            #000 30px 95px,
+            #000 40px 100px,
+            #000 50px 60px,
+            rgba(0,0,0,0) 55px 35px,
+            #000 70px 80px,
+            #000 80px 70px,
+            rgba(0,0,0,0) 110px 25px,
+            rgba(0,0,0,0) 90px 15px;
+        }
+        100% {
+          box-shadow:
+            rgba(0,0,0,0) 30px 120px,
+            rgba(0,0,0,0) 40px 120px,
+            #000 50px 75px,
+            #000 55px 50px,
+            #000 70px 100px,
+            #000 80px 95px,
+            #000 110px 45px,
+            #000 90px 35px;
+        }
+      }
+
+      /* starry */
+      .starry {
+        animation: starry_star 5s ease-in-out infinite;
+        background: #fff;
+        border-radius: 50%;  
+        box-shadow:  
+          #FFFFFF 26px 7px 0 -1px, 
+          rgba(255,255,255,0.1) -36px -19px 0 -1px, 
+          rgba(255,255,255,0.1) -51px -34px 0 -1px,
+          #FFFFFF -52px -62px 0 -1px, 
+          #FFFFFF 14px -37px, 
+          rgba(255,255,255,0.1) 41px -19px,  
+          #FFFFFF 34px -50px,
+          rgba(255,255,255,0.1) 14px -71px 0 -1px,
+          #FFFFFF 64px -21px 0 -1px, 
+          rgba(255,255,255,0.1) 32px -85px 0 -1px,
+          #FFFFFF 64px -90px,
+          rgba(255,255,255,0.1) 60px -67px 0 -1px,  
+          #FFFFFF 34px -127px,
+          rgba(255,255,255,0.1) -26px -103px 0 -1px;
+        height: 4px;
+        width: 4px; 
+        margin-top: 100px;
+        margin-left: 86px;
+        opacity: 1;
+        position: relative;
+/*
+        left: 777px; 
+        top: 150px;
+*/
+      }
+      .starry:after { 
+        animation: starry 5s ease-in-out infinite;
+        border-radius: 50%;
+        box-shadow: #FFFFFF -25px 0;
+        content: '';
+        height: 100px;
+        width: 100px;
+        position: absolute;
+        top: -106px; 
+        transform: rotate(-5deg);
+        transform-origin: 0 50%;
+      }
+
+      @keyframes starry {
+        50% { transform: rotate(10deg); }
+      }
+      @keyframes starry_star {
+        50% { 
+          box-shadow:  
+            rgba(255,255,255,0.1) 26px 7px 0 -1px, 
+            #FFFFFF -36px -19px 0 -1px, 
+            #FFFFFF -51px -34px 0 -1px,
+            rgba(255,255,255,0.1) -52px -62px 0 -1px, 
+            rgba(255,255,255,0.1) 14px -37px,
+            #FFFFFF 41px -19px,   
+            rgba(255,255,255,0.1) 34px -50px,
+            #FFFFFF 14px -71px 0 -1px,
+            rgba(255,255,255,0.1) 64px -21px 0 -1px, 
+            #FFFFFF 32px -85px 0 -1px,
+            rgba(255,255,255,0.1) 64px -90px,
+            #FFFFFF 60px -67px 0 -1px,  
+            rgba(255,255,255,0.1) 34px -127px,
+            #FFFFFF -26px -103px 0 -1px;
+        }
+      }
+
+      /* STORMY */
+      .stormy {
+        animation: stormy 5s ease-in-out infinite;
+        background: #222222;
+        border-radius: 50%;
+        box-shadow: 
+          #222222 65px -15px 0 -5px, 
+          #222222 25px -25px, 
+          #222222 30px 10px, 
+          #222222 60px 15px 0 -10px, 
+          #222222 85px 5px 0 -5px;
+        height: 50px;  
+        width: 50px; 
+        margin-left: 40px;
+      }
+      .stormy:after {
+        animation: stormy_shadow 5s ease-in-out infinite;
+        background: #000;
+        border-radius: 50%;
+        content: '';
+        height: 15px; 
+        width: 120px; 
+        opacity: 0.2;
+        position: absolute;
+        left: 5px; 
+        bottom: -60px;
+        transform: scale(.7);
+      }
+      .stormy:before {
+        animation: stormy_thunder 2s steps(1, end) infinite; 
+        border-left: 0px solid transparent;
+        border-right: 7px solid transparent;
+        border-top: 43px solid yellow; 
+        box-shadow: yellow -7px -32px;
+        content: '';
+        display: block;
+        height: 0;
+        width: 0;
+        position: absolute;
+        left: 57px;
+        top: 70px;
+        transform: rotate(14deg);
+        transform-origin: 50% -60px;
+      }
+      @keyframes stormy {
+        50% { transform: translateY(-20px); } 
+      }  
+      @keyframes stormy_shadow {
+        50% { transform: translateY(20px) scale(1); opacity: 0.05; }
+      }
+      @keyframes stormy_thunder {
+        0%  { transform: rotate(20deg); opacity:1; }
+        5%  { transform: rotate(-34deg); opacity:1; }
+        10% { transform: rotate(0deg); opacity:1; }
+        15% { transform: rotate(-34deg); opacity:0; }
+      }
+
+      /* SNOWY */
+      .snowy {
+        animation: snowy 5s ease-in-out infinite 1s;
+        background: #FFFFFF; 
+        border-radius: 50%;
+        box-shadow: 
+          #FFFFFF 65px -15px 0 -5px, 
+          #FFFFFF 25px -25px, 
+          #FFFFFF 30px 10px, 
+          #FFFFFF 60px 15px 0 -10px, 
+          #FFFFFF 85px 5px 0 -5px;
+        display: block;
+        height: 50px;
+        width: 50px;
+        margin-left: 40px;
+      }
+      .snowy:after {
+        animation: snowy_shadow 5s ease-in-out infinite 1s;
+        background: #000000;
+        border-radius: 50%;
+        content: '';
+        height: 15px;
+        width: 120px;
+        opacity: 0.2;
+        position: absolute;
+        left: 8px;
+        bottom: -60px;
+        transform: scale(.7);
+      }
+      .snowy:before {
+        animation: snowy_snow 2s infinite linear;
+        content: '';
+        border-radius: 50%;
+        display: block;
+        height: 7px;
+        width: 7px;
+        opacity: 0.8;
+        transform: scale(.9);
+      }
+      @keyframes snowy {
+        50% { transform: translateY(-20px); }
+      }
+      @keyframes snowy_shadow {
+        50% { transform: translateY(20px) scale(1); opacity: 0.05; }
+      }
+      @keyframes snowy_snow {
+        0% {  
+          box-shadow: 
+            rgba(238,238,238,0) 30px 30px, 
+            rgba(238,238,238,0) 40px 40px,  
+            #EEEEEE 50px 75px, 
+            #EEEEEE 55px 50px, 
+            #EEEEEE 70px 100px, 
+            #EEEEEE 80px 95px, 
+            #EEEEEE 110px 45px, 
+            #EEEEEE 90px 35px; 
+        }
+        25% {  
+          box-shadow: 
+            #EEEEEE 30px 45px,
+            #EEEEEE 40px 60px,
+            #EEEEEE 50px 90px,
+            #EEEEEE 55px 65px,
+            rgba(238,238,238,0) 70px 120px,
+            rgba(238,238,238,0) 80px 120px,
+            #EEEEEE 110px 70px,
+            #EEEEEE 90px 60px;
+        }
+        26% {  
+          box-shadow:
+            #EEEEEE 30px 45px,
+            #EEEEEE 40px 60px,
+            #EEEEEE 50px 90px,
+            #EEEEEE 55px 65px,
+            rgba(238,238,238,0) 70px 40px,
+            rgba(238,238,238,0) 80px 20px,
+            #EEEEEE 110px 70px,
+            #EEEEEE 90px 60px; 
+        }
+        50% { 
+          box-shadow:
+            #EEEEEE 30px 70px,
+            #EEEEEE 40px 80px,
+            rgba(238,238,238,0) 50px 100px,
+            #EEEEEE 55px 80px,
+            #EEEEEE 70px 60px,
+            #EEEEEE 80px 45px,
+            #EEEEEE 110px 95px,
+            #EEEEEE 90px 85px;
+        }
+        51% {
+          box-shadow:
+            #EEEEEE 30px 70px,
+            #EEEEEE 40px 80px,
+            rgba(238,238,238,0) 50px 45px,
+            #EEEEEE 55px 80px,
+            #EEEEEE 70px 60px,
+            #EEEEEE 80px 45px,
+            #EEEEEE 110px 95px,
+            #EEEEEE 90px 85px;
+        }
+        75% {
+          box-shadow:
+            #EEEEEE 30px 95px,
+            #EEEEEE 40px 100px,
+            #EEEEEE 50px 60px,
+            rgba(238,238,238,0) 55px 95px,
+            #EEEEEE 70px 80px,
+            #EEEEEE 80px 70px,
+            rgba(238,238,238,0) 110px 120px,
+            rgba(238,238,238,0) 90px 110px;
+        }
+        76% {
+          box-shadow:
+            #EEEEEE 30px 95px,
+            #EEEEEE 40px 100px,
+            #EEEEEE 50px 60px,
+            rgba(238,238,238,0) 55px 35px,
+            #EEEEEE 70px 80px,
+            #EEEEEE 80px 70px,
+            rgba(238,238,238,0) 110px 25px,
+            rgba(238,238,238,0) 90px 15px;
+        }
+        100% {
+          box-shadow:
+            rgba(238,238,238,0) 30px 120px,
+            rgba(238,238,238,0) 40px 120px,
+            #EEEEEE 50px 75px,
+            #EEEEEE 55px 50px,
+            #EEEEEE 70px 100px,
+            #EEEEEE 80px 95px,
+            #EEEEEE 110px 45px,
+            #EEEEEE 90px 35px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!--
+https://www.google.it/imgres?imgurl=http%3A%2F%2Fimgs.abduzeedo.com%2Ffiles%2Farticles%2Fbreathtaking-sky-color-palette-photography%2FPacific-Heights-San-Francisco-CA-Sunrise-6-35am-Plate-1.jpg&imgrefurl=http%3A%2F%2Fabduzeedo.com%2Fbreathtaking-sky-color-palette-photography&docid=0kPncvsgx4IIkM&tbnid=cRT1sIpz5UTqkM%3A&vet=1&w=690&h=863&bih=803&biw=1440&ved=0ahUKEwjH_Pat8eTQAhXDSBQKHTiFC14QMwg7KBQwFA&iact=mrc&uact=8
+-->
+    
+    <div id="clock">
+      <span id="ore"></span>:<span id="minuti"></span>
+    </div>
+    <div id="weather"></div>
+    <!-- sunny cloudy rainy snowy starry stormy -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script>
+      var d = new Date();
+      var colors = ['#ff9b4d', '#a4bcbe', '#5293b9', '#034b85', '#01244e', '#00020e'];
+      function getTime() {
+        var h = d.getHours();
+        var m = d.getMinutes();
+        $('#ore').text(h < 10 ? '0' + h : h);
+        $('#minuti').text(m < 10 ? '0' + m : m);
+
+        if (6 <= h && h < 8)
+          $('body').css('background-color', colors[0]);
+        if (8 <= h && h < 11)
+          $('body').css('background-color', colors[1]);
+        if (11 <= h && h < 16)
+          $('body').css('background-color', colors[2]);
+        if (16 <= h && h < 19)
+          $('body').css('background-color', colors[3]);
+        if (19 <= h && h < 21)
+          $('body').css('background-color', colors[4]);
+        if (21 <= h || h < 6)
+          $('body').css('background-color', colors[5]);
+      }
+      setInterval(getTime, 1000);
+      
+      var w = $('#weather');
+      function getWeather() {
+        $.getJSON('http://api.openweathermap.org/data/2.5/weather?id=3165243&APPID=7f0553f55528351f548f3c704927c966', function(data) {
+          var risp = data.weather[0].description.split(' ');
+          w.removeClass();
+          if (risp[0] == 'clear')
+            w.addClass((d.getHours() >= 21 || d.getHours() < 6 ? 'starry' : 'sunny'));
+          if (risp[1] == 'clouds')
+            w.addClass('cloudy');
+          if (risp[0] == 'rain' || risp[1] == 'rain')
+            w.addClass('rainy');
+          if (risp[0] == 'thunderstorm')
+            w.addClass('stormy');
+          if (risp[0] == 'snow')
+            w.addClass('snowy');
+        });
+      }
+      setInterval(getWeather, 600000);
+      
+      getWeather();
+      getTime();
+    </script>
+  </body>
+</html>

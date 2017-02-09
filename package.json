@@ -1,0 +1,17 @@
+{
+  "name": "beemo",
+  "version": "1.0.0",
+  "description": "Beemö > Chromecast",
+  "main": "index.js",
+  "scripts": {
+    "start": "node_modules/.bin/electron index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^1.4.13",
+    "express": "^4.14.0",
+    "ip": "^1.1.4",
+    "peer": "^0.2.8"
+  }
+}

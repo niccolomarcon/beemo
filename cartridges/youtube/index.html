@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>YouTube</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+      nav {
+        background-color: #cd1f21;
+      }
+      .card-title i {
+        font-size: 1.5em;
+        margin-right: .5em;
+      }
+      .card-content {
+        height: 116px;
+      }
+      .card-content p {
+        font-size: 1.2em;
+      }
+      .card-title i {
+        text-shadow: 0px 0px 5px rgba(150, 150, 150, 1);
+      }
+      .card-title i:hover {
+        cursor: pointer;
+      }
+      .channel {
+        color: #d0d0d0;
+        text-decoration: none;
+      }
+      .card-action a {
+        color: #cd1f21 !important;
+      }
+      .check {
+        right: 4rem !important;
+      }
+      .controller {
+        position: fixed;
+        width: 100%;
+        bottom: -80px;
+        box-shadow: 10px 10px 10px 10px #424242;
+        padding: 0px 10px;
+        transition: bottom 1s;
+        background-color: white;
+      }
+      .controller i {
+        position: absolute;
+        top: auto;
+        font-size: 3em;
+        cursor: pointer;
+      }
+      .controller .next {
+        right: 1rem;
+      }
+      .controller .toggle {
+        right: 4rem;
+      }
+      .controller h4 {
+        font-size: 2em;
+      }
+      @media screen and (max-width: 500px) {
+        .controller h4 {
+          font-size: 1.5em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    
+    <nav>
+      <div class="nav-wrapper">
+        <form id="search-form">
+          <div class="input-field">
+            <input id="search" type="search" required>
+            <label for="search"><i class="material-icons">search</i></label>
+            <i class="material-icons close">close</i>
+          </div>
+        </form>
+      </div>
+    </nav>
+
+    <div class="row"></div>
+    
+    <div class="controller valign-wrapper">
+      <h4>Titolo</h4>
+      <i class="material-icons valign toggle">pause</i>
+      <i class="material-icons valign next">skip_next</i>
+    </div>
+
+    <script id="entry-template" type="text/x-handlebars-template">
+    <div class="col m4 s12">
+      <div class="card">
+        <div class="card-image">
+          <img src="{{thumbnail}}">
+          <span class="card-title" data-video-id="{{id}}" data-video-title="{{title}}">
+            <i class="material-icons play">play_circle_filled</i>
+            <i class="material-icons enqueue">playlist_add</i>
+          </span>
+        </div>
+        <div class="card-content">
+          <p>{{title}}</p>
+          <span class="channel">{{channel}}</span>
+        </div>
+      </div>
+    </div>
+    </script>
+
+    <script src="http://cdn.peerjs.com/0.3/peer.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.6/handlebars.min.js"></script>
+    <script type="text/javascript">
+      // stuff for handlebars
+      var source   = $("#entry-template").html();
+      var template = Handlebars.compile(source);
+      function display_card(video) {
+        var context = {
+          thumbnail: video.snippet.thumbnails.high.url,
+          id: video.id.videoId,
+          title: video.snippet.title,
+          channel: video.snippet.channelTitle
+        };
+        var html = template(context);
+        $('.row').append(html);
+      }
+      
+      // p2p part
+      var peer = new Peer({key: '8hw27u2km0z1if6r'});
+      var conn = peer.connect('2lahrd6crdl323xr');
+      
+      function send() {
+        var id = this.parentElement.attributes[1].value;
+        var title = this.parentElement.attributes[2].value;
+        conn.send(id);
+        show_controller(title);
+      }
+      
+      function push() {
+        var id = this.parentElement.attributes[1].value;
+        conn.send('/add ' + id);
+      }
+      
+      function search(query) {
+        var sanitize = query.split(' ').join('+'); //(?)
+        var url = 'https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&type=video&key=AIzaSyCxtMtZGRHWgyByjVourvJFu3sVvBaJXSE&q=' + sanitize;
+        $.getJSON(url, function(data) {
+          var videos = data.items;
+          $('.row').empty(); // remove all the videos
+          videos.forEach(function(video) {
+            display_card(video);
+          });
+          $('.play').on('click', send);
+          $('.enqueue').on('click', push);
+        });
+      }
+      
+      // evento per la x (da sistemare ancora)
+      $('.close').off('click.card').on('click', function() {
+        $('#search').val('');
+        $('#search').focus();
+      });
+      
+      // toggle play/pause icon
+      function toggle_play_icon() {
+        if($('.toggle').text() == 'pause')
+          $('.toggle').text('play_arrow');
+        else
+          $('.toggle').text('pause');
+      }
+      
+      function show_controller(title) {
+        change_video(title);
+        $('.controller').css('bottom', '0px');
+      }
+      
+      // cambia il titolo del video in riproduzione
+      function change_video(title) {
+        $('.controller h4').text(title);
+      }
+      
+      $('.toggle').on('click', function() {
+        conn.send('/pp');
+        toggle_play_icon();
+      });
+      $('.next').on('click', function() {
+        conn.send('/next');
+        // cambiare il nome del video? magari mandato dal rasp
+      });
+      
+      // evita che venga caricata una nuova pagina
+      $('#search-form').on('submit', function(e) {
+        e.preventDefault();
+        search($('#search').val());
+        $('#search').blur();
+      });
+    </script>
+  </body>
+</html>
